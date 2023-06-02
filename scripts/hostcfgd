@@ -222,7 +222,21 @@ class FeatureHandler(object):
         self.port_listener_thread = threading.Thread(target=self._portListener, name='port_listener_thread')
         self.port_listener_thread.daemon = True
         self.port_listener_thread.start()
-        self._device_running_config = device_info.get_device_runtime_metadata()
+        try:
+            self._device_running_config = device_info.get_device_runtime_metadata()
+        except OSError as e:
+            print('device_info = {}'.format(device_info))
+            print('device_info.get_platform = {}'.format(device_info.get_platform))
+            platform_name = device_info.get_platform()
+            print('platform_name = {}'.format(platform_name))
+            platform_env = os.getenv("PLATFORM")
+            print('platform_env = {}'.format(platform_env))
+            machine_info = device_info.get_machine_info()
+            print('machine_info = {}'.format(machine_info))
+            platform_from_db = device_info.get_localhost_info('platform')
+            print('platform_from_db = {}'.format(platform_from_db))
+            raise e
+            
         self.ns_cfg_db = {}
         self.ns_feature_state_tbl = {}
 
